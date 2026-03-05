@@ -30,7 +30,7 @@ city_pollution_causes = {
 st.markdown("<h1 style='text-align:center;'>🌍 PrithviNet</h1>",unsafe_allow_html=True)
 
 st.markdown(
-"<p style='text-align:center;font-size:18px;'>Smart Environmental Monitoring Platform for Air, Water and Noise Pollution</p>",
+"<p style='text-align:center;font-size:18px;'>PrithviNet is a web-based platform for monitoring air pollution across Indian cities through interactive dashboards and maps. It uses AI-based prediction to estimate future pollution levels and identify possible causes.</p>",
 unsafe_allow_html=True
 )
 
