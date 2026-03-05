@@ -158,20 +158,59 @@ st.divider()
 # Pollution source breakdown
 # -----------------------------
 
-st.subheader("Pollution Source Breakdown")
+# -----------------------------
+# Source breakdown + intervention simulator
+# -----------------------------
 
-sources = pd.DataFrame({
-"Source":["Vehicles","Industries","Construction","Waste Burning"],
-"Contribution":[45,30,15,10]
-})
+st.subheader(f"Pollution Analysis for {city}")
 
-fig3 = px.pie(
-sources,
-names="Source",
-values="Contribution"
-)
+colA, colB = st.columns(2)
 
-st.plotly_chart(fig3)
+# -----------------------------
+# Pollution source breakdown
+# -----------------------------
+
+with colA:
+
+    st.markdown(f"### Source Breakdown in {city}")
+
+    sources = pd.DataFrame({
+        "Source":["Vehicles","Industries","Construction","Waste Burning"],
+        "Contribution":[45,30,15,10]
+    })
+
+    fig3 = px.pie(
+        sources,
+        names="Source",
+        values="Contribution",
+        height=350
+    )
+
+    st.plotly_chart(fig3, use_container_width=True)
+
+# -----------------------------
+# Intervention simulator
+# -----------------------------
+
+with colB:
+
+    st.markdown(f"### Pollution Intervention Simulator ({city})")
+
+    vehicle_reduction = st.slider(
+        "Reduce vehicle emissions (%)",
+        0,50,10
+    )
+
+    industry_reduction = st.slider(
+        "Reduce industrial emissions (%)",
+        0,50,10
+    )
+
+    impact = vehicle_reduction*0.5 + industry_reduction*0.5
+
+    new_pm = int(current * (1-impact/100))
+
+    st.success(f"Predicted PM2.5 after intervention: {new_pm}")
 
 st.divider()
 
