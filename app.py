@@ -6,9 +6,9 @@ st.set_page_config(page_title="PrithviNet", layout="wide")
 
 data = pd.read_csv("pollution_data.csv")
 
-# -------------------------------
-# Pollution cause database
-# -------------------------------
+# -----------------------------
+# Pollution causes database
+# -----------------------------
 
 city_pollution_causes = {
 "Delhi":["Vehicular emissions","Crop burning","Construction dust","Industrial pollution"],
@@ -21,10 +21,10 @@ city_pollution_causes = {
 "Ahmedabad":["Industrial emissions","Vehicle pollution"],
 "Lucknow":["Crop burning impact","Traffic pollution"],
 "Jaipur":["Dust storms","Vehicle emissions"],
-"Bhopal":["Industrial zones","Traffic"],
+"Bhopal":["Industrial zones","Traffic pollution"],
 "Patna":["Construction dust","Vehicle pollution"],
 "Ranchi":["Industrial activities","Coal burning"],
-"Bhubaneswar":["Traffic","Urban growth"],
+"Bhubaneswar":["Urban growth","Traffic pollution"],
 "Raipur":["Steel industries","Mining dust"],
 "Indore":["Urban traffic","Construction"],
 "Chandigarh":["Vehicle density"],
@@ -38,16 +38,14 @@ city_pollution_causes = {
 "Shillong":["Tourism vehicles"],
 "Agartala":["Urban growth"],
 "Mysore":["Traffic"],
-"Hyderabad":["Urban traffic"],
-"Chennai":["Vehicle pollution"],
 "Coimbatore":["Industries"],
 "Thiruvananthapuram":["Traffic"],
 "Panaji":["Tourism traffic"]
 }
 
-# -------------------------------
-# Title
-# -------------------------------
+# -----------------------------
+# TITLE
+# -----------------------------
 
 st.markdown("<h1 style='text-align:center;'>🌍 PrithviNet</h1>", unsafe_allow_html=True)
 
@@ -58,11 +56,13 @@ unsafe_allow_html=True
 
 st.divider()
 
-# -------------------------------
-# City pollution bar chart
-# -------------------------------
+# -----------------------------
+# BAR GRAPH + MAP
+# -----------------------------
 
 col1, col2 = st.columns([2,1])
+
+# -------- BAR GRAPH --------
 
 with col1:
 
@@ -76,7 +76,7 @@ with col1:
         height=450
     )
 
-    fig.update_traces(width=0.45)
+    fig.update_traces(width=0.4)
 
     fig.update_layout(
         xaxis_tickangle=-60
@@ -84,23 +84,24 @@ with col1:
 
     st.plotly_chart(fig, use_container_width=True)
 
-# -------------------------------
-# Map
-# -------------------------------
+# -------- MAP --------
 
 with col2:
 
     st.subheader("India Pollution Map")
 
-    map_data = data[["Latitude","Longitude"]]
+    map_data = data.rename(columns={
+        "Latitude":"lat",
+        "Longitude":"lon"
+    })
 
-    st.map(map_data, zoom=4)
+    st.map(map_data)
 
 st.divider()
 
-# -------------------------------
-# Highest and lowest pollution
-# -------------------------------
+# -----------------------------
+# Highest & Lowest Pollution
+# -----------------------------
 
 highest = data.loc[data["PM2.5"].idxmax()]
 lowest = data.loc[data["PM2.5"].idxmin()]
@@ -115,9 +116,9 @@ with col4:
 
 st.divider()
 
-# -------------------------------
-# City analysis
-# -------------------------------
+# -----------------------------
+# CITY ANALYSIS
+# -----------------------------
 
 st.subheader("City Pollution Analysis")
 
@@ -147,28 +148,30 @@ st.plotly_chart(fig2,use_container_width=True)
 
 st.divider()
 
-# -------------------------------
-# Floating AI Assistant
-# -------------------------------
+# -----------------------------
+# FLOATING AI ASSISTANT BUTTON
+# -----------------------------
 
 st.markdown("""
 <style>
 
-.floating-btn{
+.chat-button{
 position:fixed;
-bottom:30px;
-right:30px;
-background-color:#2563eb;
+bottom:25px;
+right:25px;
+background:#2563eb;
 color:white;
-padding:14px 18px;
-border-radius:25px;
+padding:15px 18px;
+border-radius:30px;
 font-weight:bold;
-box-shadow:0px 4px 12px rgba(0,0,0,0.3);
-z-index:1000;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
+z-index:9999;
 }
 
 </style>
-""",unsafe_allow_html=True)
+""", unsafe_allow_html=True)
+
+# session state for chatbot
 
 if "chat_open" not in st.session_state:
     st.session_state.chat_open=False
@@ -176,28 +179,28 @@ if "chat_open" not in st.session_state:
 if st.button("🤖 AI Pollution Assistant"):
     st.session_state.chat_open=not st.session_state.chat_open
 
-# -------------------------------
-# AI Assistant panel
-# -------------------------------
+# -----------------------------
+# AI ASSISTANT PANEL
+# -----------------------------
 
 if st.session_state.chat_open:
 
     st.markdown("## 🤖 AI Pollution Assistant")
 
-    city_ai=st.selectbox("Select City",data["City"],key="ai")
+    city_ai = st.selectbox("Choose City", data["City"], key="ai")
 
-    base=int(data[data["City"]==city_ai]["PM2.5"].values[0])
+    base = int(data[data["City"]==city_ai]["PM2.5"].values[0])
 
-    prediction=int(base*1.08)
+    predicted = int(base * 1.08)
 
     st.markdown("### Possible Causes")
 
-    causes=city_pollution_causes.get(city_ai,
-    ["Traffic congestion","Industrial emissions","Construction dust"])
+    causes = city_pollution_causes.get(city_ai,
+        ["Traffic congestion","Industrial emissions","Construction dust"])
 
     for c in causes:
-        st.write("•",c)
+        st.write("•", c)
 
     st.markdown("### AI Prediction")
 
-    st.warning(f"Estimated PM2.5 in next few days: {prediction}")
+    st.warning(f"Estimated PM2.5 in next few days: {predicted}")
