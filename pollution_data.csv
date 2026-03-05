@@ -1,6 +1,38 @@
-City,Latitude,Longitude,PM2.5,Noise,Water_pH
-Mumbai,19.0760,72.8777,110,65,7.2
-Pune,18.5204,73.8567,85,70,6.9
-Delhi,28.7041,77.1025,140,80,7.4
-Bangalore,12.9716,77.5946,75,60,7.1
-Chennai,13.0827,80.2707,90,68,6.8
+City,State,Latitude,Longitude,PM2.5,Noise,Water_pH
+Delhi,Delhi,28.7041,77.1025,180,78,7.3
+Mumbai,Maharashtra,19.0760,72.8777,110,72,7.1
+Pune,Maharashtra,18.5204,73.8567,85,64,7.1
+Nagpur,Maharashtra,21.1458,79.0882,95,63,7.0
+Ahmedabad,Gujarat,23.0225,72.5714,140,70,7.2
+Surat,Gujarat,21.1702,72.8311,120,68,7.1
+Jaipur,Rajasthan,26.9124,75.7873,125,68,7.2
+Udaipur,Rajasthan,24.5854,73.7125,80,60,7.2
+Lucknow,Uttar Pradesh,26.8467,80.9462,150,69,7.0
+Kanpur,Uttar Pradesh,26.4499,80.3319,170,71,6.9
+Patna,Bihar,25.5941,85.1376,160,72,6.8
+Ranchi,Jharkhand,23.3441,85.3096,105,65,7.0
+Kolkata,West Bengal,22.5726,88.3639,130,70,6.9
+Bhubaneswar,Odisha,20.2961,85.8245,95,64,7.1
+Raipur,Chhattisgarh,21.2514,81.6296,100,66,7.0
+Bhopal,Madhya Pradesh,23.2599,77.4126,90,58,7.1
+Indore,Madhya Pradesh,22.7196,75.8577,80,60,7.2
+Chandigarh,Chandigarh,30.7333,76.7794,100,60,7.3
+Amritsar,Punjab,31.6340,74.8723,135,70,7.0
+Shimla,Himachal Pradesh,31.1048,77.1734,60,50,7.4
+Dehradun,Uttarakhand,30.3165,78.0322,85,60,7.2
+Srinagar,Jammu and Kashmir,34.0837,74.7973,75,58,7.3
+Gangtok,Sikkim,27.3314,88.6138,45,40,7.4
+Guwahati,Assam,26.1445,91.7362,95,62,7.2
+Agartala,Tripura,23.8315,91.2868,80,55,7.1
+Imphal,Manipur,24.8170,93.9368,70,50,7.3
+Aizawl,Mizoram,23.7271,92.7176,55,45,7.4
+Kohima,Nagaland,25.6751,94.1086,60,48,7.3
+Itanagar,Arunachal Pradesh,27.0844,93.6053,50,40,7.4
+Shillong,Meghalaya,25.5788,91.8933,65,50,7.3
+Bangalore,Karnataka,12.9716,77.5946,75,62,7.1
+Mysore,Karnataka,12.2958,76.6394,60,50,7.3
+Hyderabad,Telangana,17.3850,78.4867,95,66,7.0
+Chennai,Tamil Nadu,13.0827,80.2707,90,65,7.2
+Coimbatore,Tamil Nadu,11.0168,76.9558,70,55,7.3
+Thiruvananthapuram,Kerala,8.5241,76.9366,60,52,7.3
+Panaji,Goa,15.4909,73.8278,55,48,7.3
