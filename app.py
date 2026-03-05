@@ -2,16 +2,20 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# Page settings
 st.set_page_config(page_title="PrithviNet", layout="wide")
 
+# Title
 st.title("🌍 PrithviNet Environmental Monitoring Platform")
-
-st.markdown("AI-powered monitoring system for **Air, Water and Noise pollution**.")
+st.write("AI-powered monitoring system for **Air, Water and Noise pollution**.")
 
 # Load data
 data = pd.read_csv("pollution_data.csv")
 
-# ---- Dashboard ----
+# ==============================
+# Dashboard Section
+# ==============================
+
 st.header("📊 Pollution Dashboard")
 
 col1, col2, col3 = st.columns(3)
@@ -22,20 +26,39 @@ col3.metric("Average Water pH", round(data["Water_pH"].mean(),2))
 
 st.divider()
 
-# ---- Charts ----
+# ==============================
+# Chart Section
+# ==============================
+
 st.subheader("Air Pollution Levels")
 
-fig = px.bar(data, x="City", y="PM2.5", color="PM2.5",
-             title="PM2.5 Levels Across Cities")
+fig = px.bar(
+    data,
+    x="City",
+    y="PM2.5",
+    color="PM2.5",
+    title="PM2.5 Levels Across Cities"
+)
 
 st.plotly_chart(fig, use_container_width=True)
 
-# ---- Map ----
+# ==============================
+# Map Section (FIXED)
+# ==============================
+
 st.subheader("🗺 Pollution Map")
 
-st.map(data[["Latitude","Longitude"]])
+map_data = data.rename(columns={
+    "Latitude": "lat",
+    "Longitude": "lon"
+})
 
-# ---- Alerts ----
+st.map(map_data)
+
+# ==============================
+# Alert Section
+# ==============================
+
 st.subheader("⚠ Pollution Alerts")
 
 limit = 100
@@ -44,7 +67,10 @@ for i,row in data.iterrows():
     if row["PM2.5"] > limit:
         st.error(f"{row['City']} has dangerous PM2.5 level: {row['PM2.5']}")
 
-# ---- AI Prediction (simple demo) ----
+# ==============================
+# AI Prediction Section
+# ==============================
+
 st.subheader("🤖 AI Pollution Risk Predictor")
 
 city = st.selectbox("Select City", data["City"])
@@ -55,7 +81,7 @@ pm = int(city_data["PM2.5"].values[0])
 
 prediction = pm * 1.1
 
-st.write(f"Current PM2.5: {pm}")
+st.write(f"Current PM2.5 level: {pm}")
 
 st.success(f"Predicted PM2.5 in next 24 hours: {round(prediction)}")
 
