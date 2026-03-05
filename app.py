@@ -4,15 +4,15 @@ import plotly.express as px
 
 st.set_page_config(page_title="PrithviNet", layout="wide")
 
-# -----------------------------
-# Load data
-# -----------------------------
+# ----------------------------
+# Load Data
+# ----------------------------
 
 data = pd.read_csv("pollution_data.csv")
 
-# -----------------------------
+# ----------------------------
 # Pollution causes database
-# -----------------------------
+# ----------------------------
 
 city_pollution_causes = {
 "Delhi":["Vehicular emissions","Crop burning","Construction dust","Industrial pollution"],
@@ -27,9 +27,9 @@ city_pollution_causes = {
 "Jaipur":["Dust storms","Vehicle emissions"]
 }
 
-# -----------------------------
+# ----------------------------
 # Title
-# -----------------------------
+# ----------------------------
 
 st.markdown("<h1 style='text-align:center;'>🌍 PrithviNet</h1>", unsafe_allow_html=True)
 
@@ -40,9 +40,9 @@ unsafe_allow_html=True
 
 st.divider()
 
-# -----------------------------
-# City pollution bar chart
-# -----------------------------
+# ----------------------------
+# City Pollution Bar Graph
+# ----------------------------
 
 col1, col2 = st.columns([2,1])
 
@@ -55,34 +55,36 @@ with col1:
         x="City",
         y="PM2.5",
         color="PM2.5",
-        height=450,
+        height=420,
         color_continuous_scale="reds"
     )
 
-    fig.update_traces(width=0.4)
+    fig.update_traces(width=0.35)
 
     fig.update_layout(xaxis_tickangle=-60)
 
     st.plotly_chart(fig, use_container_width=True)
 
-# -----------------------------
-# Map
-# -----------------------------
+# ----------------------------
+# India Map
+# ----------------------------
 
 with col2:
 
     st.subheader("India Pollution Map")
 
-    map_data = data.rename(columns={"Latitude":"lat","Longitude":"lon"})
-    map_data = map_data[["lat","lon"]]
+    map_data = data.rename(columns={
+        "Latitude":"lat",
+        "Longitude":"lon"
+    })
 
-    st.map(map_data)
+    st.map(map_data[["lat","lon"]])
 
 st.divider()
 
-# -----------------------------
-# Highest / lowest pollution
-# -----------------------------
+# ----------------------------
+# Highest & Lowest Pollution
+# ----------------------------
 
 highest = data.loc[data["PM2.5"].idxmax()]
 lowest = data.loc[data["PM2.5"].idxmin()]
@@ -97,34 +99,9 @@ with col4:
 
 st.divider()
 
-# -----------------------------
-# Pollution risk meter
-# -----------------------------
-
-st.subheader("Pollution Risk Meter")
-
-risk_data = []
-
-for i,row in data.iterrows():
-
-    if row["PM2.5"] < 50:
-        status="🟢 Safe"
-    elif row["PM2.5"] < 100:
-        status="🟡 Moderate"
-    else:
-        status="🔴 Dangerous"
-
-    risk_data.append({"City":row["City"],"Status":status})
-
-risk_df = pd.DataFrame(risk_data)
-
-st.dataframe(risk_df)
-
-st.divider()
-
-# -----------------------------
-# City trend analysis
-# -----------------------------
+# ----------------------------
+# City Selection
+# ----------------------------
 
 st.subheader("City Pollution Analysis")
 
@@ -154,21 +131,15 @@ st.plotly_chart(fig2,use_container_width=True)
 
 st.divider()
 
-# -----------------------------
-# Pollution source breakdown
-# -----------------------------
-
-# -----------------------------
-# Source breakdown + intervention simulator
-# -----------------------------
+# ----------------------------
+# Source Breakdown + Intervention Simulator
+# ----------------------------
 
 st.subheader(f"Pollution Analysis for {city}")
 
 colA, colB = st.columns(2)
 
-# -----------------------------
-# Pollution source breakdown
-# -----------------------------
+# Source breakdown
 
 with colA:
 
@@ -186,11 +157,9 @@ with colA:
         height=350
     )
 
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3,use_container_width=True)
 
-# -----------------------------
 # Intervention simulator
-# -----------------------------
 
 with colB:
 
@@ -214,31 +183,14 @@ with colB:
 
 st.divider()
 
-# -----------------------------
-# Pollution intervention simulator
-# -----------------------------
-
-st.subheader("Pollution Intervention Simulator")
-
-vehicle_reduction = st.slider("Reduce vehicle emissions (%)",0,50,10)
-industry_reduction = st.slider("Reduce industrial emissions (%)",0,50,10)
-
-impact = (vehicle_reduction*0.5 + industry_reduction*0.5)
-
-new_pm = int(current * (1-impact/100))
-
-st.success(f"Predicted PM2.5 after intervention: {new_pm}")
-
-st.divider()
-
-# -----------------------------
-# Early warning system
-# -----------------------------
+# ----------------------------
+# AI Early Warning System
+# ----------------------------
 
 st.subheader("AI Early Warning System")
 
 if current > 120:
-    st.error(f"⚠ {city} pollution may reach hazardous levels in next 48 hours")
+    st.error(f"⚠ {city} pollution may reach hazardous levels soon")
 
 elif current > 80:
     st.warning(f"{city} pollution likely to increase in next 24 hours")
@@ -248,9 +200,9 @@ else:
 
 st.divider()
 
-# -----------------------------
+# ----------------------------
 # AI Environmental Copilot
-# -----------------------------
+# ----------------------------
 
 st.subheader("🤖 AI Environmental Copilot")
 
@@ -265,10 +217,12 @@ question = st.selectbox(
 
 if question == "Why is pollution high in this city?":
 
-    causes = city_pollution_causes.get(city,
-        ["Traffic congestion","Industrial emissions","Construction dust"])
+    causes = city_pollution_causes.get(
+        city,
+        ["Traffic congestion","Industrial emissions","Construction dust"]
+    )
 
-    st.write("Possible causes:")
+    st.write(f"Possible causes in **{city}**:")
 
     for c in causes:
         st.write("•",c)
@@ -277,7 +231,9 @@ elif question == "Which cities are most polluted?":
 
     top = data.sort_values("PM2.5",ascending=False).head(5)
 
-    st.write(top[["City","PM2.5"]])
+    st.write("Top polluted cities:")
+
+    st.dataframe(top[["City","PM2.5"]])
 
 elif question == "What actions can reduce pollution?":
 
@@ -285,5 +241,6 @@ elif question == "What actions can reduce pollution?":
 • Reduce vehicle traffic  
 • Control industrial emissions  
 • Increase green cover  
-• Improve public transport
+• Improve public transport  
+• Implement stricter pollution regulations
 """)
