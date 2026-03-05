@@ -6,9 +6,9 @@ st.set_page_config(page_title="PrithviNet", layout="wide")
 
 data = pd.read_csv("pollution_data.csv")
 
-# -----------------------------
-# Pollution causes database
-# -----------------------------
+# ---------------------------
+# Pollution Causes
+# ---------------------------
 
 city_pollution_causes = {
 "Delhi":["Vehicular emissions","Crop burning","Construction dust","Industrial pollution"],
@@ -43,9 +43,9 @@ city_pollution_causes = {
 "Panaji":["Tourism traffic"]
 }
 
-# -----------------------------
-# TITLE
-# -----------------------------
+# ---------------------------
+# Title
+# ---------------------------
 
 st.markdown("<h1 style='text-align:center;'>🌍 PrithviNet</h1>", unsafe_allow_html=True)
 
@@ -56,13 +56,11 @@ unsafe_allow_html=True
 
 st.divider()
 
-# -----------------------------
+# ---------------------------
 # BAR GRAPH + MAP
-# -----------------------------
+# ---------------------------
 
 col1, col2 = st.columns([2,1])
-
-# -------- BAR GRAPH --------
 
 with col1:
 
@@ -84,24 +82,26 @@ with col1:
 
     st.plotly_chart(fig, use_container_width=True)
 
-# -------- MAP --------
-
 with col2:
 
     st.subheader("India Pollution Map")
 
-    map_data = data.rename(columns={
-        "Latitude":"lat",
-        "Longitude":"lon"
+    map_data = data.copy()
+
+    map_data = map_data.rename(columns={
+        "Latitude": "lat",
+        "Longitude": "lon"
     })
+
+    map_data = map_data[["lat", "lon"]]
 
     st.map(map_data)
 
 st.divider()
 
-# -----------------------------
+# ---------------------------
 # Highest & Lowest Pollution
-# -----------------------------
+# ---------------------------
 
 highest = data.loc[data["PM2.5"].idxmax()]
 lowest = data.loc[data["PM2.5"].idxmin()]
@@ -116,9 +116,9 @@ with col4:
 
 st.divider()
 
-# -----------------------------
-# CITY ANALYSIS
-# -----------------------------
+# ---------------------------
+# City Analysis
+# ---------------------------
 
 st.subheader("City Pollution Analysis")
 
@@ -148,59 +148,26 @@ st.plotly_chart(fig2,use_container_width=True)
 
 st.divider()
 
-# -----------------------------
-# FLOATING AI ASSISTANT BUTTON
-# -----------------------------
+# ---------------------------
+# AI Pollution Assistant
+# ---------------------------
 
-st.markdown("""
-<style>
+st.markdown("### 🤖 AI Pollution Assistant")
 
-.chat-button{
-position:fixed;
-bottom:25px;
-right:25px;
-background:#2563eb;
-color:white;
-padding:15px 18px;
-border-radius:30px;
-font-weight:bold;
-box-shadow:0 4px 10px rgba(0,0,0,0.3);
-z-index:9999;
-}
+city_ai = st.selectbox("Select City for AI Analysis", data["City"], key="ai")
 
-</style>
-""", unsafe_allow_html=True)
+base = int(data[data["City"]==city_ai]["PM2.5"].values[0])
 
-# session state for chatbot
+prediction = int(base * 1.08)
 
-if "chat_open" not in st.session_state:
-    st.session_state.chat_open=False
+st.markdown("#### Possible Causes")
 
-if st.button("🤖 AI Pollution Assistant"):
-    st.session_state.chat_open=not st.session_state.chat_open
+causes = city_pollution_causes.get(city_ai,
+["Traffic congestion","Industrial emissions","Construction dust"])
 
-# -----------------------------
-# AI ASSISTANT PANEL
-# -----------------------------
+for c in causes:
+    st.write("•", c)
 
-if st.session_state.chat_open:
+st.markdown("#### AI Prediction")
 
-    st.markdown("## 🤖 AI Pollution Assistant")
-
-    city_ai = st.selectbox("Choose City", data["City"], key="ai")
-
-    base = int(data[data["City"]==city_ai]["PM2.5"].values[0])
-
-    predicted = int(base * 1.08)
-
-    st.markdown("### Possible Causes")
-
-    causes = city_pollution_causes.get(city_ai,
-        ["Traffic congestion","Industrial emissions","Construction dust"])
-
-    for c in causes:
-        st.write("•", c)
-
-    st.markdown("### AI Prediction")
-
-    st.warning(f"Estimated PM2.5 in next few days: {predicted}")
+st.warning(f"Estimated PM2.5 in next few days: {prediction}")
