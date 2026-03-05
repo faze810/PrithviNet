@@ -5,11 +5,12 @@ import random
 
 st.set_page_config(page_title="PrithviNet", layout="wide")
 
+# Load data
 data = pd.read_csv("pollution_data.csv")
 
-# -------------------------
-# TITLE SECTION
-# -------------------------
+# ----------------------------
+# TITLE
+# ----------------------------
 
 st.markdown(
 "<h1 style='text-align:center;'>🌍 PrithviNet</h1>",
@@ -23,9 +24,9 @@ unsafe_allow_html=True
 
 st.divider()
 
-# -------------------------
-# GRAPH + MAP SECTION
-# -------------------------
+# ----------------------------
+# GRAPH + MAP
+# ----------------------------
 
 col1, col2 = st.columns([2,1])
 
@@ -55,9 +56,9 @@ with col2:
 
 st.divider()
 
-# -------------------------
-# HIGHEST + LOWEST POLLUTION
-# -------------------------
+# ----------------------------
+# HIGHEST / LOWEST CITY
+# ----------------------------
 
 highest = data.loc[data["PM2.5"].idxmax()]
 lowest = data.loc[data["PM2.5"].idxmin()]
@@ -72,9 +73,9 @@ with col4:
 
 st.divider()
 
-# -------------------------
+# ----------------------------
 # CITY ANALYSIS
-# -------------------------
+# ----------------------------
 
 st.subheader("City Pollution Analysis")
 
@@ -102,55 +103,81 @@ fig2 = px.line(
 
 st.plotly_chart(fig2, use_container_width=True)
 
-# -------------------------
-# AI CHAT BUTTON
-# -------------------------
+# ----------------------------
+# FLOATING CHATBOT STYLE
+# ----------------------------
 
+st.markdown("""
+<style>
+.chat-button {
+position: fixed;
+bottom: 20px;
+right: 20px;
+background-color: #2563eb;
+color: white;
+padding: 14px 18px;
+border-radius: 50px;
+font-size: 16px;
+font-weight: bold;
+box-shadow: 0px 4px 15px rgba(0,0,0,0.4);
+}
+
+.chat-box {
+position: fixed;
+bottom: 80px;
+right: 20px;
+width: 320px;
+background-color: #111;
+padding: 15px;
+border-radius: 12px;
+box-shadow: 0px 4px 25px rgba(0,0,0,0.5);
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Chat toggle
 if "chat_open" not in st.session_state:
     st.session_state.chat_open = False
 
-st.divider()
+chat_button = st.button("🤖 AI Assistant")
 
-st.markdown("### 🤖 AI Pollution Risk Predictor")
-
-if st.button("Open AI Assistant"):
+if chat_button:
     st.session_state.chat_open = not st.session_state.chat_open
 
-
-# -------------------------
-# AI CHATBOX
-# -------------------------
+# ----------------------------
+# CHAT WINDOW
+# ----------------------------
 
 if st.session_state.chat_open:
 
-    ai_city = st.selectbox(
+    st.markdown("### 🤖 PrithviNet AI Assistant")
+
+    st.write("Select a city to analyze pollution risk.")
+
+    city_ai = st.selectbox(
         "Choose City",
         data["City"],
-        key="ai_city"
+        key="chat_city"
     )
 
-    base = int(data[data["City"] == ai_city]["PM2.5"].values[0])
+    base = int(data[data["City"] == city_ai]["PM2.5"].values[0])
 
-    prediction = base + random.randint(10,30)
+    prediction = base + random.randint(10,25)
 
     reasons = [
         "High traffic congestion",
         "Industrial emissions",
         "Construction dust",
-        "Weather conditions trapping pollutants",
-        "Firecracker pollution",
-        "Vehicle density"
+        "Low wind speeds trapping pollutants",
+        "Seasonal crop burning",
+        "Firecracker pollution"
     ]
 
-    st.write("### Possible Reasons")
+    st.markdown("### Possible Causes")
 
     for r in random.sample(reasons,3):
-        st.write("-", r)
+        st.write("•", r)
 
-    st.write("### Predicted Pollution in Coming Days")
+    st.markdown("### AI Prediction")
 
-    st.warning(f"Estimated PM2.5 level: {prediction}")
-
-    st.write("**Prediction for next few days:**")
-
-    st.warning(f"Estimated PM2.5: {prediction}")
+    st.warning(f"Expected PM2.5 in next few days: {prediction}")
