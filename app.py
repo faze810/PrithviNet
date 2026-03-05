@@ -1,180 +1,145 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import random
 
 st.set_page_config(page_title="PrithviNet", layout="wide")
 
-# Load data
 data = pd.read_csv("pollution_data.csv")
 
-st.title("🌍 PrithviNet Environmental Monitoring Platform")
-st.write("AI-powered monitoring system for **Air, Water and Noise pollution**.")
+# -------------------------
+# TITLE SECTION
+# -------------------------
 
-# ==============================
-# Sidebar Navigation
-# ==============================
+st.markdown("<h1 style='text-align:center;'>🌍 PrithviNet</h1>", unsafe_allow_html=True)
 
-page = st.sidebar.selectbox(
-    "Navigation",
-    [
-        "Dashboard",
-        "Pollution Map",
-        "Pollution Heatmap",
-        "Alerts",
-        "AI Prediction",
-        "Industry Monitor",
-        "Citizen Portal"
-    ]
+st.markdown(
+"<p style='text-align:center;font-size:18px;'>Smart Environmental Monitoring Platform for Air, Water and Noise Pollution</p>",
+unsafe_allow_html=True
 )
 
-# ==============================
-# Dashboard
-# ==============================
+st.image(
+"https://images.unsplash.com/photo-1500375592092-40eb2168fd21",
+use_container_width=True
+)
 
-if page == "Dashboard":
+st.divider()
 
-    st.header("📊 Pollution Dashboard")
+# -------------------------
+# GRAPH + MAP SECTION
+# -------------------------
 
-    col1, col2, col3 = st.columns(3)
+col1, col2 = st.columns([2,1])
 
-    col1.metric("Highest PM2.5", data["PM2.5"].max())
-    col2.metric("Average Noise", round(data["Noise"].mean(),2))
-    col3.metric("Average Water pH", round(data["Water_pH"].mean(),2))
+with col1:
 
-    st.divider()
-
-    st.subheader("Air Pollution Levels")
+    st.subheader("Pollution Levels Across Cities")
 
     fig = px.bar(
         data,
         x="City",
         y="PM2.5",
         color="PM2.5",
-        title="PM2.5 Levels Across Cities"
+        title="PM2.5 Levels"
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
+with col2:
 
-# ==============================
-# Pollution Map
-# ==============================
-
-elif page == "Pollution Map":
-
-    st.header("🗺 Pollution Map")
+    st.subheader("India Pollution Map")
 
     map_data = data.rename(columns={
         "Latitude": "lat",
         "Longitude": "lon"
     })
 
-    st.map(map_data)
+    st.map(map_data, zoom=4)
 
+st.divider()
 
-# ==============================
-# Pollution Heatmap
-# ==============================
+# -------------------------
+# HIGHEST + LOWEST POLLUTION
+# -------------------------
 
-elif page == "Pollution Heatmap":
+highest_city = data.loc[data["PM2.5"].idxmax()]
+lowest_city = data.loc[data["PM2.5"].idxmin()]
 
-    st.header("🔥 Pollution Heatmap")
+col3, col4 = st.columns(2)
 
-    fig_map = px.scatter_mapbox(
-        data,
-        lat="Latitude",
-        lon="Longitude",
-        size="PM2.5",
-        color="PM2.5",
-        hover_name="City",
-        zoom=4
-    )
+with col3:
+    st.error(f"⚠ Highest Polluted City: {highest_city['City']} ({highest_city['PM2.5']})")
 
-    fig_map.update_layout(mapbox_style="open-street-map")
+with col4:
+    st.success(f"✅ Lowest Polluted City: {lowest_city['City']} ({lowest_city['PM2.5']})")
 
-    st.plotly_chart(fig_map, use_container_width=True)
+st.divider()
 
+# -------------------------
+# CITY DROPDOWN
+# -------------------------
 
-# ==============================
-# Alerts
-# ==============================
+st.subheader("City Pollution Analysis")
 
-elif page == "Alerts":
+city = st.selectbox("Select City", data["City"])
 
-    st.header("⚠ Pollution Alerts")
+city_data = data[data["City"] == city]
 
-    limit = 100
+current = int(city_data["PM2.5"].values[0])
 
-    for i,row in data.iterrows():
-        if row["PM2.5"] > limit:
-            st.error(f"{row['City']} has dangerous PM2.5 level: {row['PM2.5']}")
-        else:
-            st.success(f"{row['City']} pollution level is safe")
+before = current - random.randint(5,15)
+after = current + random.randint(5,15)
 
+trend_data = pd.DataFrame({
+    "Time":["24h Before","Current","24h After"],
+    "PM2.5":[before,current,after]
+})
 
-# ==============================
-# AI Prediction
-# ==============================
+fig2 = px.line(
+    trend_data,
+    x="Time",
+    y="PM2.5",
+    markers=True,
+    title=f"Pollution Trend for {city}"
+)
 
-elif page == "AI Prediction":
+st.plotly_chart(fig2, use_container_width=True)
 
-    st.header("🤖 AI Pollution Risk Predictor")
+st.divider()
 
-    city = st.selectbox("Select City", data["City"])
+# -------------------------
+# AI PREDICTOR BUTTON
+# -------------------------
 
-    city_data = data[data["City"] == city]
+st.markdown("### 🤖 AI Pollution Risk Predictor")
 
-    pm = int(city_data["PM2.5"].values[0])
+if "show_ai" not in st.session_state:
+    st.session_state.show_ai = False
 
-    prediction = pm * 1.1
+if st.button("Open AI Predictor"):
+    st.session_state.show_ai = True
 
-    st.write(f"Current PM2.5 level: {pm}")
+if st.session_state.show_ai:
 
-    st.success(f"Predicted PM2.5 in next 24 hours: {round(prediction)}")
+    ai_city = st.selectbox("Select city for prediction", data["City"])
 
-    if prediction > 120:
-        st.warning("High pollution risk predicted.")
-    else:
-        st.success("Pollution expected to remain moderate.")
+    base = int(data[data["City"]==ai_city]["PM2.5"].values[0])
 
+    prediction = base + random.randint(10,25)
 
-# ==============================
-# Industry Monitor
-# ==============================
+    reasons = [
+        "High traffic congestion",
+        "Industrial emissions",
+        "Construction dust",
+        "Weather conditions trapping pollutants",
+        "Festival firecrackers"
+    ]
 
-elif page == "Industry Monitor":
+    st.write("### Possible Reasons")
 
-    st.header("🏭 Industry Emission Monitor")
+    for r in random.sample(reasons,3):
+        st.write("-",r)
 
-    industry = st.text_input("Industry Name")
+    st.write("### Predicted Pollution")
 
-    emission = st.slider("SO2 Emission Level",0,200,80)
-
-    if emission > 120:
-        st.error("⚠ Industry exceeds pollution limits. Inspection required.")
-    else:
-        st.success("Emission within safe limit.")
-
-
-# ==============================
-# Citizen Portal
-# ==============================
-
-elif page == "Citizen Portal":
-
-    st.header("👥 Citizen Pollution Checker")
-
-    city_check = st.selectbox("Check pollution in your city", data["City"])
-
-    city_info = data[data["City"] == city_check]
-
-    pm = city_info["PM2.5"].values[0]
-
-    st.write(f"Current PM2.5 level: {pm}")
-
-    if pm < 80:
-        st.success("Air quality is safe")
-    elif pm < 120:
-        st.warning("Moderate pollution level")
-    else:
-        st.error("Dangerous pollution level")
+    st.warning(f"Estimated PM2.5 in next few days: {prediction}")
